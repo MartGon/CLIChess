@@ -1,16 +1,5 @@
 #include <iostream>
-#include <AWC/Game.h>
-
-// Tiles
-#include <AWC/TileType.h>
-#include <AWC/Tile.h>
-
-// Units
-#include <AWC/Unit/UnitType.h>
-#include <AWC/TilePattern/TilePatternDesc.h>
-#include <AWC/Unit/MovementDescType.h>
-#include <AWC/CostTable.h>
-#include <AWC/Unit/WeaponType.h>
+#include <AWC.h>
 
 // App
 #include <Console.h>

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <AWC/Game.h>
+#include <AWC.h>
 
 class ConsoleCommand;
 
