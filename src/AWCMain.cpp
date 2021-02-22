@@ -62,7 +62,7 @@ int main()
 
         // Blue units
     map.AddUnit({4, 0}, soldierType.CreateUnit(game.GetPlayer(1)));
-    //map.AddUnit({4, 2}, soldierType.CreateUnit(game.GetPlayer(1)));
+    map.AddUnit({4, 2}, soldierType.CreateUnit(game.GetPlayer(1)));
 
     // Set map
     game.AddMap(map);
