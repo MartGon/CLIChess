@@ -12,11 +12,14 @@ class ConsoleCommand;
 #define RESET "\033[0m"
 
 // Foregrounds
+#define BLACK_FG "\x1B[30m"
 #define RED_FG "\x1B[31m"
 #define BLUE_FG "\x1B[34m"
+#define WHITE_FG "\x1B[37m"
 
 // Backgrounds
 #define GREEN_BG "\033[42m"
+#define BLUE_BG "\033[44m"
 
 #define ESCAPE_SIZE 5
 

@@ -42,13 +42,13 @@ int main()
     Game game;
 
         // Players
-    Player playerOne{0, 0, 1000};
-    Player playerTwo{1, 1, 1100};
+    Player playerOne{0, 0, 0};
+    Player playerTwo{1, 1, 0};
     game.AddPlayer(playerOne);
     game.AddPlayer(playerTwo);
 
     // Tiles
-    Map map{6, 3};
+    Map map{8, 8};
     TileType grassType{0, "Grass"};
     MapUtils::FillMap(map, grassType);
 
