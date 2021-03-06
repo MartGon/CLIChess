@@ -117,3 +117,22 @@ private:
     const unsigned int ARGS_SIZE = 2;
 };
 
+namespace CommandNS
+{
+    class Custom : public GameCommand
+    {
+    public:
+        Custom(Game& game, std::function<void(std::vector<std::string> args)> func) : func_{func}, GameCommand{game}
+        {
+
+        }
+
+        void Execute(std::vector<std::string> args) override
+        {
+            func_(args);
+        }
+    private:
+        std::function<void(std::vector<std::string>)> func_;
+    };
+}
+
