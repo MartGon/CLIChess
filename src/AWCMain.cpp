@@ -18,7 +18,7 @@ UnitType CreateSoldierType()
 
     // CostTables
     std::shared_ptr<CostTable> unitCostTable{new CostTable};
-    unitCostTable->SetCost(0, std::numeric_limits<uint>::max());
+    unitCostTable->SetCost(0, 0);
 
     CostTablePtr tileCostTable{new CostTable};
     uint grassId = 0;
@@ -69,7 +69,7 @@ int main()
     // Set map
     game.AddMap(map);
 
-    std::string SCRIPTS_DIR = std::string{RESOURCES_DIR} + "Scripts/";
+    std::string SCRIPTS_DIR = std::string{RESOURCES_DIR} + "Scripts/Operation/";
     std::string moveSP = SCRIPTS_DIR + "/ChessMove.lua";
 
     auto moveST = -1;
@@ -95,7 +95,6 @@ int main()
     Padding padding{2, 2, 4, 2};
     std::shared_ptr<ConsoleCommand> printMapComm{new PrintMapCommand{game, padding}};
     std::shared_ptr<ConsoleCommand> exitComm{new ExitConsoleCommand{console}};
-    //std::shared_ptr<ConsoleCommand> moveComm{new UnitMoveCommand(game)};
     std::shared_ptr<ConsoleCommand> attackComm{new UnitAttackCommand(game)};
     std::shared_ptr<ConsoleCommand> reportComm{new UnitReportCommand(game)};
     std::shared_ptr<ConsoleCommand> passComm{new PassTurnCommand{game}};
@@ -108,6 +107,7 @@ int main()
     };
     subject.Register(Script::SCRIPT, errCb, Event::Notification::Type::ERROR);
 
+    // Move Command
     auto parseMove = [&moveST, &sGame](std::vector<std::string> args)
     {
         std::cout << "Moving\n";
@@ -116,7 +116,6 @@ int main()
         int originY = std::atoi(args[1].c_str());
         Vector2 origin{originX, originY};
         std::cout << "origin: " << origin.ToString() << '\n';
-
 
         int destX = std::atoi(args[2].c_str());
         int destY = std::atoi(args[3].c_str());
@@ -128,10 +127,28 @@ int main()
         auto& st = sGame.GetScriptTable(s);
 
         st.SetInt("mapIndex", 0);
-        st.SetFullUserData("origin", Script::UserData::Vector2::MT_NAME, origin);
-        st.SetFullUserData("dest", Script::UserData::Vector2::MT_NAME, dest);
+        st.SetGCData("origin", Script::UserData::Vector2::MT_NAME, origin);
+        st.SetGCData("dest", Script::UserData::Vector2::MT_NAME, dest);
 
-        sGame.PushScript(s);
+        auto pid = sGame.PushScript(s);
+
+        auto& game = sGame.GetGame();
+        auto& subject = game.GetSubject();
+
+        auto cb = [pid](const Event::Notification::Notification noti, Entity::GUID entity, Game& game){
+            if(noti.process.id == pid)
+            {
+                game.PassTurn();
+
+                auto nextTurn = game.GetCurrentTurn();
+                std::cout << "Now it's Player " << nextTurn.playerIndex << " turn\n";
+
+                auto& subject = game.GetSubject();
+                subject.Unregister(entity);
+            }
+        };
+        subject.Register(Script::SCRIPT, cb, Event::Notification::Type::POST);
+
         sGame.GetGame().Run();
     };
     std::shared_ptr<CommandNS::Custom> moveComm{new CommandNS::Custom{game, parseMove}};
@@ -142,7 +159,6 @@ int main()
     console.AddCommand("pass", passComm);
     console.AddCommand("exit", exitComm);
     console.AddCommand("move", moveComm);
-    //console.AddCommand("attack", attackComm);
     console.AddCommand("report", reportComm);
     console.AddCommand("help", helpComm);
 
