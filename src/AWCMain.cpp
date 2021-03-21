@@ -14,18 +14,18 @@ UnitType CreateSoldierType()
 
     // TilePatternDesc
     std::vector<Vector2> manhattanMoves{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-    TilePatternDescIPtr manhattan = TilePatternDesc::Create(manhattanMoves);
+    AreaDescIPtr manhattan = AreaDesc::Create(manhattanMoves);
 
     // CostTables
-    std::shared_ptr<CostTable> unitCostTable{new CostTable};
-    unitCostTable->SetCost(0, 0);
+    CostTable unitCostTable;
+    unitCostTable.SetCost(0, 0);
 
-    CostTablePtr tileCostTable{new CostTable};
+    CostTable tileCostTable;
     uint grassId = 0;
-    tileCostTable->SetCost(grassId, 1);
+    tileCostTable.SetCost(grassId, 1);
 
     // Movement
-    MovementDecTypePtr moveType{ new MovementDescType{manhattan, {3, 0}, tileCostTable, unitCostTable, 99}};
+    MovementDescTypePtr moveType{ new MovementDescType{manhattan, {3, 0}, tileCostTable, unitCostTable, 99}};
 
     // Weapon
     AttackTable attackTable{ { {id, true}, {1, true} } };
@@ -43,6 +43,18 @@ int main()
     Script::Game sGame;
     auto& game = sGame.GetGame();
 
+    std::string CONFIG_SCRIPT = std::string{RESOURCES_DIR} + "Scripts/Config.lua";
+    try
+    {
+        sGame.RunConfig(CONFIG_SCRIPT);
+    }catch(const AWCException& e)
+    {
+        std::cout << "Exception thrown while running file " << CONFIG_SCRIPT << ": " << e.what() << '\n';
+        return -1;
+    }
+
+    auto& unitDB = sGame.GetDB().get<UnitType>();
+
     // Players
     Player playerOne{0, 0, 0};
     Player playerTwo{1, 1, 0};
@@ -55,16 +67,16 @@ int main()
     MapUtils::FillMap(map, grassType);
 
     // Units
-    auto soldierType = CreateSoldierType();
+    auto rookType = unitDB.GetById(0);
     
         // Red units
-    map.AddUnit({1, 0}, soldierType.CreateUnit(game.GetPlayer(0)));
-    map.AddUnit({2, 1}, soldierType.CreateUnit(game.GetPlayer(0)));
-    map.AddUnit({1, 2}, soldierType.CreateUnit(game.GetPlayer(0)));
+    map.AddUnit({1, 0}, rookType->CreateUnit(game.GetPlayer(0)));
+    map.AddUnit({2, 1}, rookType->CreateUnit(game.GetPlayer(0)));
+    map.AddUnit({1, 2}, rookType->CreateUnit(game.GetPlayer(0)));
 
         // Blue units
-    map.AddUnit({4, 0}, soldierType.CreateUnit(game.GetPlayer(1)));
-    map.AddUnit({4, 2}, soldierType.CreateUnit(game.GetPlayer(1)));
+    map.AddUnit({4, 0}, rookType->CreateUnit(game.GetPlayer(1)));
+    map.AddUnit({4, 2}, rookType->CreateUnit(game.GetPlayer(1)));
 
     // Set map
     game.AddMap(map);
@@ -126,9 +138,9 @@ int main()
         std::cout << "script: " << s << '\n';
         auto& st = sGame.GetScriptTable(s);
 
-        st.SetInt("mapIndex", 0);
-        st.SetGCData("origin", Script::UserData::Vector2::MT_NAME, origin);
-        st.SetGCData("dest", Script::UserData::Vector2::MT_NAME, dest);
+        st.Set("mapIndex", 0);
+        st.SetDataCopy<Script::UserData::Vector2>("origin", origin);
+        st.SetDataCopy<Script::UserData::Vector2>("dest", dest);
 
         auto pid = sGame.PushScript(s);
 
