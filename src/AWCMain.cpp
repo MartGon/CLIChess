@@ -68,15 +68,17 @@ int main()
 
     // Units
     auto rookType = unitDB.GetById(0);
+    auto kingType = unitDB.GetById(1);
     
         // Red units
-    map.AddUnit({1, 0}, rookType->CreateUnit(game.GetPlayer(0)));
-    map.AddUnit({2, 1}, rookType->CreateUnit(game.GetPlayer(0)));
-    map.AddUnit({1, 2}, rookType->CreateUnit(game.GetPlayer(0)));
+    map.AddUnit({4, 0}, kingType->CreateUnit(game.GetPlayer(1)));
+    map.AddUnit({0, 0}, rookType->CreateUnit(game.GetPlayer(1)));
+    map.AddUnit({7, 0}, rookType->CreateUnit(game.GetPlayer(1)));
 
         // Blue units
-    map.AddUnit({4, 0}, rookType->CreateUnit(game.GetPlayer(1)));
-    map.AddUnit({4, 2}, rookType->CreateUnit(game.GetPlayer(1)));
+    map.AddUnit({4, 7}, kingType->CreateUnit(game.GetPlayer(0)));
+    map.AddUnit({0, 7}, rookType->CreateUnit(game.GetPlayer(0)));
+    map.AddUnit({7, 7}, rookType->CreateUnit(game.GetPlayer(0)));
 
     // Set map
     game.AddMap(map);
