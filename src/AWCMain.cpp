@@ -47,19 +47,13 @@ int main()
     try
     {
         sGame.RunConfig(CONFIG_SCRIPT);
-    }catch(const AWCException& e)
+    }catch(const AWC::Exception& e)
     {
         std::cout << "Exception thrown while running file " << CONFIG_SCRIPT << ": " << e.what() << '\n';
         return -1;
     }
 
     auto& unitDB = sGame.GetDB().get<UnitType>();
-
-    // Players
-    Player playerOne{0, 0, 0};
-    Player playerTwo{1, 1, 0};
-    game.AddPlayer(playerOne);
-    game.AddPlayer(playerTwo);
 
     // Tiles
     Map map{8, 8};
@@ -93,7 +87,7 @@ int main()
 
         std::cout << "All scripts parsed were correctly loaded\n";
     }
-    catch(const AWCException& e)
+    catch(const AWC::Exception& e)
     {
         std::cout << "Exception thrown: " << e.what() << '\n';
     }
