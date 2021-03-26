@@ -43,6 +43,12 @@ int main()
     Script::Game sGame;
     auto& game = sGame.GetGame();
 
+     // Tiles
+    Map map{8, 8};
+    TileType grassType{0, "Grass"};
+    MapUtils::FillMap(map, grassType);
+    game.AddMap(map);
+
     std::string CONFIG_SCRIPT = std::string{RESOURCES_DIR} + "Scripts/Config.lua";
     try
     {
@@ -54,28 +60,6 @@ int main()
     }
 
     auto& unitDB = sGame.GetDB().get<UnitType>();
-
-    // Tiles
-    Map map{8, 8};
-    TileType grassType{0, "Grass"};
-    MapUtils::FillMap(map, grassType);
-
-    // Units
-    auto rookType = unitDB.GetById(0);
-    auto kingType = unitDB.GetById(1);
-    
-        // Red units
-    map.AddUnit({4, 0}, kingType->CreateUnit(game.GetPlayer(1)));
-    map.AddUnit({0, 0}, rookType->CreateUnit(game.GetPlayer(1)));
-    map.AddUnit({7, 0}, rookType->CreateUnit(game.GetPlayer(1)));
-
-        // Blue units
-    map.AddUnit({4, 7}, kingType->CreateUnit(game.GetPlayer(0)));
-    map.AddUnit({0, 7}, rookType->CreateUnit(game.GetPlayer(0)));
-    map.AddUnit({7, 7}, rookType->CreateUnit(game.GetPlayer(0)));
-
-    // Set map
-    game.AddMap(map);
 
     std::string SCRIPTS_DIR = std::string{RESOURCES_DIR} + "Scripts/Operation/";
     std::string moveSP = SCRIPTS_DIR + "/ChessMove.lua";
