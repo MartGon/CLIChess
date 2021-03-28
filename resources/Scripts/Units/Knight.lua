@@ -1,12 +1,21 @@
-require('Dirs');
+require("Dirs")
 
-function CreateKing()
+local KnigthDirs = {
+    {x = 2, y = 1},
+    {x = -2, y = 1},
+    {x = 2, y = -1},
+    {x = -2, y = -1},
+    {x = 1, y = 2},
+    {x = -1, y = 2},
+    {x = 1, y = -2},
+    {x = -1, y = -2}
+}
 
-    local name = "King";
+function CreateKnight()
+
+    local name = "Knight";
     local tpd = AreaDesc.New({
-        directions = {
-            Dirs.ne, Dirs.nw, Dirs.se, Dirs.sw
-        }
+        directions = KnigthDirs;
     });
     
     local moveType = MovementDescType.New({
