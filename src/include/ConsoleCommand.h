@@ -68,13 +68,15 @@ struct Padding
 class PrintMapCommand : public GameCommand
 {
 public:
-    PrintMapCommand(Game& game, Padding padding) : padding_{padding}, GameCommand{game} {}; 
+    PrintMapCommand(Game& game, Padding padding, int hRatio = 1) : padding_{padding}, GameCommand{game}, hRatio_{hRatio} 
+    {}; 
 
     void Execute(std::vector<std::string> args) override;
 private:
 
     void PrintPadding(uint length, char c);
     Padding padding_;
+    int hRatio_;
 };
 
 class PassTurnCommand : public GameCommand

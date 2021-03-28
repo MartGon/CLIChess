@@ -63,7 +63,7 @@ int main(int argc, const char** args)
 
     // Commands
     Padding padding{2, 2, 4, 2};
-    std::shared_ptr<ConsoleCommand> printMapComm{new PrintMapCommand{game, padding}};
+    std::shared_ptr<ConsoleCommand> printMapComm{new PrintMapCommand{game, padding, 2}};
     std::shared_ptr<ConsoleCommand> exitComm{new ExitConsoleCommand{console}};
     std::shared_ptr<ConsoleCommand> attackComm{new UnitAttackCommand(game)};
     std::shared_ptr<ConsoleCommand> reportComm{new UnitReportCommand(game)};

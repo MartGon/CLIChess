@@ -36,7 +36,9 @@ void PrintMapCommand::Execute(std::vector<std::string> args)
         {
             auto tile = map.GetTile(i, j);
             auto color = (i + j) & 1 ? BLUE_BG : GREEN_BG;
-            std::string str = color + std::string(1, ' ');
+            std::string str = color;
+            for(int r = 0; r < hRatio_; r++)
+                str = str + std::string(1, ' ');
             charMatrix[i][j] = str;
         }
     }
@@ -49,9 +51,11 @@ void PrintMapCommand::Execute(std::vector<std::string> args)
             auto unit = map.GetUnit(i, j);
             if(unit)
             {
-                char c = unit->GetName()[0];
+                std::string name = unit->GetName();
                 std::string color = unit->GetOwner().GetId() == 1 ?  WHITE_FG : BLACK_FG;
-                std::string str = color + std::string(1, c);
+                std::string str = color;
+                for(int r = 0; r < hRatio_; r++)
+                    str = str + std::string(1, name[r]); 
                 auto substr = charMatrix[i][j].substr(0, ESCAPE_SIZE);
                 charMatrix[i][j] = substr + str;
             }
@@ -66,7 +70,9 @@ void PrintMapCommand::Execute(std::vector<std::string> args)
     for(int j = 0; j < mapSize.x; j++)
     {
         char c = 65 + j;
-        std::cout << c << ' ';
+        std::cout << c;
+        for(int r = 1; r < hRatio_; r++)
+            std::cout <<' ';
     }
     std::cout << '\n';
 
@@ -79,7 +85,6 @@ void PrintMapCommand::Execute(std::vector<std::string> args)
         for(int j = 0; j < mapSize.x; j++)
         {
             auto str = charMatrix[j][i];
-            std::cout << str + RESET;
             std::cout << str + RESET;
         }
         PrintPadding(padding_.right, ' ');
