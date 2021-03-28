@@ -4,6 +4,7 @@ require('Units/King');
 require('Units/Bishop');
 require('Units/Knight');
 require('Units/Queen');
+require('Units/Pawn');
 
 -- Players
 local white = game:CreatePlayer(0);
@@ -15,6 +16,9 @@ local kingType = DB:AddUnitType(CreateKing());
 local bishopType = DB:AddUnitType(CreateBishop());
 local knightType = DB:AddUnitType(CreateKnight());
 local queenType = DB:AddUnitType(CreateQueen());
+
+local whitePawnType = DB:AddUnitType(CreateWhitePawn());
+local blackPawnType = DB:AddUnitType(CreateBlackPawn());
 
 -- Tiles
 local tileType = DB:AddTileType("ChessTile");
@@ -32,6 +36,10 @@ map:AddUnit({x = 5, y = 0}, bishopType:CreateUnit(white));
 map:AddUnit({x = 6, y = 0}, knightType:CreateUnit(white));
 map:AddUnit(Vector2.new(7, 0), rookType:CreateUnit(white));
 
+for i = 0, 7 do
+    map:AddUnit({x = i, y = 1}, whitePawnType:CreateUnit(white));
+end
+
 map:AddUnit(Vector2.new(0, 7), rookType:CreateUnit(black));
 map:AddUnit({x = 1, y = 7}, knightType:CreateUnit(black));
 map:AddUnit({x = 2, y = 7}, bishopType:CreateUnit(black));
@@ -41,3 +49,6 @@ map:AddUnit({x = 5, y = 7}, bishopType:CreateUnit(black));
 map:AddUnit({x = 6, y = 7}, knightType:CreateUnit(black));
 map:AddUnit(Vector2.new(7, 7), rookType:CreateUnit(black));
 
+for i = 0, 7 do
+    map:AddUnit({x = i, y = 6}, blackPawnType:CreateUnit(black));
+end
