@@ -1,20 +1,23 @@
 
-require('resources/Scripts/Units/Rook');
-require('resources/Scripts/Units/King');
+require('Units/Rook');
+require('Units/King');
 
-local rookTypeId = DB:AddUnitType(CreateRook());
-local kingTypeId = DB:AddUnitType(CreateKing());
+-- Players
+local black = game:CreatePlayer(0);
+local white = game:CreatePlayer(1);
 
-local black = Game:CreatePlayer(0);
-local white = Game:CreatePlayer(1);
+-- Units
+local rookType = DB:AddUnitType(CreateRook());
+local kingType = DB:AddUnitType(CreateKing());
 
-local rookType = DB:GetUnitType(rookTypeId);
-local kingType = DB:GetUnitType(kingTypeId);
+-- Tiles
+local tileType = DB:AddTileType("ChessTile");
 
-local map = Game:GetMap(0);
-print(map);
+-- Map
+local map = game:CreateMap(8, 8);
+map:Fill(tileType);
 
-map:AddUnit(Vector2.new(0, 0), rookType:CreateUnit(white));
+map:AddUnit({x = 0, y = 0}, rookType:CreateUnit(white));
 map:AddUnit(Vector2.new(4, 0), kingType:CreateUnit(white));
 map:AddUnit(Vector2.new(7, 0), rookType:CreateUnit(white));
 

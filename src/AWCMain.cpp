@@ -1,4 +1,6 @@
 #include <iostream>
+#include <filesystem>
+
 #include <AWC.h>
 #include <Script.h>
 
@@ -37,19 +39,16 @@ UnitType CreateSoldierType()
     return soldierType;
 }
 
-int main()
+int main(int argc, const char** args)
 {
     // Prepare game
     Script::Game sGame;
     auto& game = sGame.GetGame();
 
-     // Tiles
-    Map map{8, 8};
-    TileType grassType{0, "Grass"};
-    MapUtils::FillMap(map, grassType);
-    game.AddMap(map);
+    std::filesystem::path scripts = std::filesystem::path{RESOURCES_DIR} / std::filesystem::path{"Scripts/"};
+    sGame.GetLuaVM().AppendToPath(scripts);
 
-    std::string CONFIG_SCRIPT = std::string{RESOURCES_DIR} + "Scripts/Config.lua";
+    std::filesystem::path CONFIG_SCRIPT = scripts / "Config.lua";
     try
     {
         sGame.RunConfig(CONFIG_SCRIPT);
@@ -58,8 +57,6 @@ int main()
         std::cout << "Exception thrown while running file " << CONFIG_SCRIPT << ": " << e.what() << '\n';
         return -1;
     }
-
-    auto& unitDB = sGame.GetDB().get<UnitType>();
 
     std::string SCRIPTS_DIR = std::string{RESOURCES_DIR} + "Scripts/Operation/";
     std::string moveSP = SCRIPTS_DIR + "/ChessMove.lua";
