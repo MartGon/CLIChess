@@ -1,35 +1,35 @@
-require("Dirs")
+require ("Dirs")
 
-function CreateRook()
+function CreateBishop()
 
-    local name = "Rook";
+    local name = "Bishop";
     local tpd = AreaDesc.New({
         directions = {
-            Dirs.n, Dirs.w, Dirs.e, Dirs.s
+            Dirs.ne, Dirs.nw, Dirs.se, Dirs.sw
         },
         lockedDirs = {
             {
-                dir = Dirs.n,
+                dir = Dirs.nw,
                 locksTo = {
-                    Dirs.n
+                    Dirs.nw
                 }
             },
             {
-                dir = Dirs.w,
+                dir = Dirs.ne,
                 locksTo = {
-                    Dirs.w
+                    Dirs.ne
                 }
             },
             {
-                dir = Dirs.e,
+                dir = Dirs.sw,
                 locksTo = {
-                    Dirs.e
+                    Dirs.sw
                 }
             },
             {
-                dir = Dirs.s,
+                dir = Dirs.se,
                 locksTo = {
-                    Dirs.s
+                    Dirs.se
                 }
             }
         }

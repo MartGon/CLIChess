@@ -1,68 +1,61 @@
-local n = Vector2.new(0, 1);
-local s = Vector2.new(0, -1);
-local e = Vector2.new(1, 0);
-local w = Vector2.new(-1, 0);
-local ne = {x = 1, y = 1};
-local nw = {x = -1, y = 1};
-local se = {x = 1, y = -1};
-local sw = {x = -1, y = -1};
+require("Dirs")
 
 function CreateKing()
 
     local name = "King";
     local tpd = AreaDesc.New({
         directions = {
-            n, s, e, w,
-            ne, nw, se, sw
+            Dirs.n, Dirs.s, Dirs.e, Dirs.w,
+            Dirs.ne, Dirs.nw, Dirs.se, Dirs.sw
         },
         lockedDirs = {
             {
-                dir = n,
+                dir = Dirs.n,
                 locksTo = {
-                    n
+                    Dirs.n
                 }
             },
             {
-                dir = w,
+                dir = Dirs.w,
                 locksTo = {
-                    w
+                    Dirs.w
                 }
             },
             {
-                dir = e,
+                dir = Dirs.e,
                 locksTo = {
-                    e
+                    Dirs.e
                 }
             },
             {
-                dir = s,
+                dir = Dirs.s,
                 locksTo = {
-                    s
+                    Dirs.s
                 }
             }
             ,
             {
-                dir = nw,
+                dir = Dirs.nw,
                 locksTo = {
-                    nw
+                    Dirs.nw
                 }
             },
             {
-                dir = ne,
+                dir = Dirs.ne,
                 locksTo = {
-                    ne
+                    Dirs.ne
                 }
             },
             {
-                dir = sw,
+                dir = Dirs.sw,
                 locksTo = {
-                    sw
+                    Dirs.sw
                 }
             },
             {
-                dir = se,
+                dir = Dirs.se,
                 locksTo = {
-                    se
+                    Dirs.se
                 }
             }
         }
