@@ -4,8 +4,8 @@ require('Units/King');
 require('Units/Bishop');
 
 -- Players
-local black = game:CreatePlayer(0);
-local white = game:CreatePlayer(1);
+local white = game:CreatePlayer(0);
+local black = game:CreatePlayer(1);
 
 -- Units
 local rookType = DB:AddUnitType(CreateRook());

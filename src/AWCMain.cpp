@@ -8,35 +8,16 @@
 #include <Console.h>
 #include <ConsoleCommand.h>
 
-UnitType CreateSoldierType()
+int GetCoord(char c)
 {
-    // Name and id
-    uint id = 0;
-    std::string name = "Soldier";
-
-    // TilePatternDesc
-    std::vector<Vector2> manhattanMoves{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-    AreaDescIPtr manhattan = AreaDesc::Create(manhattanMoves);
-
-    // CostTables
-    CostTable unitCostTable;
-    unitCostTable.SetCost(0, 0);
-
-    CostTable tileCostTable;
-    uint grassId = 0;
-    tileCostTable.SetCost(grassId, 1);
-
-    // Movement
-    MovementDescTypePtr moveType{ new MovementDescType{manhattan, {3, 0}, tileCostTable, unitCostTable, 99}};
-
-    // Weapon
-    AttackTable attackTable{ { {id, true}, {1, true} } };
-    DamageTable damageTable{ { {id, 50}, {1, 25} } };
-    WeaponTypePtr weaponType{ new WeaponType{manhattan, {1, 1}, attackTable, damageTable, 99}};
-
-    UnitType soldierType{id, name, moveType, {weaponType}};
-
-    return soldierType;
+    if(c >= 'A' && c < 'a')
+        c = c -'A';
+    else if(c >= 'a')
+        c = c - 'a';
+    else
+        c = c - '0';
+    
+    return c;
 }
 
 int main(int argc, const char** args)
@@ -101,13 +82,13 @@ int main(int argc, const char** args)
     {
         std::cout << "Moving\n";
 
-        int originX = std::atoi(args[0].c_str());
-        int originY = std::atoi(args[1].c_str());
+        int originX = GetCoord(args[0][0]);
+        int originY = GetCoord(args[0][1]);
         Vector2 origin{originX, originY};
         std::cout << "origin: " << origin.ToString() << '\n';
 
-        int destX = std::atoi(args[2].c_str());
-        int destY = std::atoi(args[3].c_str());
+        int destX = GetCoord(args[1][0]);
+        int destY = GetCoord(args[1][1]);
         Vector2 dest{destX, destY};
         std::cout << "dest: " << dest.ToString() << '\n';
 

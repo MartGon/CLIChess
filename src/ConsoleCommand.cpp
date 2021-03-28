@@ -50,7 +50,7 @@ void PrintMapCommand::Execute(std::vector<std::string> args)
             if(unit)
             {
                 char c = unit->GetName()[0];
-                std::string color = unit->GetOwner().GetId() == 1 ? BLACK_FG : WHITE_FG;
+                std::string color = unit->GetOwner().GetId() == 1 ?  WHITE_FG : BLACK_FG;
                 std::string str = color + std::string(1, c);
                 auto substr = charMatrix[i][j].substr(0, ESCAPE_SIZE);
                 charMatrix[i][j] = substr + str;
