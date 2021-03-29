@@ -40,7 +40,7 @@ int main(int argc, const char** args)
     }
 
     std::string SCRIPTS_DIR = std::string{RESOURCES_DIR} + "Scripts/Operation/";
-    std::string moveSP = SCRIPTS_DIR + "/ChessMove.lua";
+    std::string moveSP = SCRIPTS_DIR + "ChessMove.lua";
 
     auto moveST = -1;
     try
@@ -73,7 +73,7 @@ int main(int argc, const char** args)
     // Error listener
     auto& subject = game.GetSubject();
     auto errCb = [](const Event::Notification::Notification noti, Entity::GUID, Game&){
-        std::cout << "An error ocurred: " << noti.res.value().GetReason() << '\n';
+        //std::cout << noti.res.value().GetReason();
     };
     subject.Register(Script::SCRIPT, errCb, Event::Notification::Type::ERROR);
 
@@ -100,11 +100,11 @@ int main(int argc, const char** args)
         st.SetDataCopy<Script::UserData::Vector2>("origin", origin);
         st.SetDataCopy<Script::UserData::Vector2>("dest", dest);
 
-        auto pid = sGame.PushScript(s);
-
         auto& game = sGame.GetGame();
-        auto& subject = game.GetSubject();
+        Process::Trigger::Trigger t{Process::Trigger::Type::PLAYER, game.GetCurrentTurn().playerIndex};
+        auto pid = sGame.PushScript(s, t);
 
+        auto& subject = game.GetSubject();
         auto cb = [pid](const Event::Notification::Notification noti, Entity::GUID entity, Game& game){
             if(noti.process.id == pid)
             {

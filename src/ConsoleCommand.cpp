@@ -52,7 +52,7 @@ void PrintMapCommand::Execute(std::vector<std::string> args)
             if(unit)
             {
                 std::string name = unit->GetName();
-                std::string color = unit->GetOwner().GetId() == 1 ?  WHITE_FG : BLACK_FG;
+                std::string color = unit->GetOwner().GetId() == 1 ? BLACK_FG : WHITE_FG;
                 std::string str = color;
                 for(int r = 0; r < hRatio_; r++)
                     str = str + std::string(1, name[r]); 
