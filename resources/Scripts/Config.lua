@@ -11,14 +11,14 @@ local white = game:CreatePlayer(0);
 local black = game:CreatePlayer(1);
 
 -- Units
-local rookType = DB:AddUnitType(CreateRook());
-local kingType = DB:AddUnitType(CreateKing());
-local bishopType = DB:AddUnitType(CreateBishop());
-local knightType = DB:AddUnitType(CreateKnight());
-local queenType = DB:AddUnitType(CreateQueen());
+local rookType = DB:AddUnitType(CreateRook()); -- 0
+local kingType = DB:AddUnitType(CreateKing()); -- 1
+local bishopType = DB:AddUnitType(CreateBishop()); -- 2
+local knightType = DB:AddUnitType(CreateKnight()); -- 3
+local queenType = DB:AddUnitType(CreateQueen()); -- 4
 
-local whitePawnType = DB:AddUnitType(CreateWhitePawn());
-local blackPawnType = DB:AddUnitType(CreateBlackPawn());
+local whitePawnType = DB:AddUnitType(CreateWhitePawn()); -- 5
+local blackPawnType = DB:AddUnitType(CreateBlackPawn()); -- 6
 
 -- Tiles
 local tileType = DB:AddTileType("ChessTile");

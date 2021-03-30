@@ -9,22 +9,31 @@ function Execute(game, process)
     if trigger.type == Trigger.PLAYER and owner:GetId() == trigger.id then
         if unit then
             if origin ~= dest then
+
+                destUnit = map:GetUnit(dest);
+                if destUnit and destUnit ~= unit then
+                    print("Unit found on "..tostring(dest).." calculating Attack..");
+                    local attack = unit:CalculateAttack(0, map, origin);
+                    if attack:CanAttack(dest) then
+
+                        map:RemoveUnit(dest) -- Remove to calculate movement
+                    end
+                end
                 
                 movement = unit:CalculateMovement(map, origin);
                 if movement:CanMove(dest) then -- dest is also defined in this env
                     
-                    destUnit = map:GetUnit(dest);
-                    if destUnit ~= unit then
-                        map:RemoveUnit(dest);
-                    end 
-
                     map:RemoveUnit(origin);
                     map:AddUnit(dest, unit);
 
                     print("Unit moved successfully from "..tostring(origin).." to "..tostring(dest));
+                elseif destUnit then
+                    map:AddUnit(dest, destUnit); -- restore unit if cannot move there
+                    error ("Unit cannot move to that location")
                 else
                     error ("Unit cannot move to that location")
                 end
+
             else
                 error("Origin and destination are the same position")
             end

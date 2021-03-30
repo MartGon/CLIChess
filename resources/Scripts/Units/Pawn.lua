@@ -35,12 +35,40 @@ local blackAdp = AreaDesc.New({
     }
 });
 
+local whiteAttackAdp = AreaDesc.New({
+    directions = {
+        Dirs.ne,
+        Dirs.nw
+    }
+})
+
+local blackAttackAdp = AreaDesc.New({
+    directions = {
+        Dirs.se,
+        Dirs.sw
+    }
+})
+
+local whiteWeapon = WeaponType.New({
+    tpd = whiteAttackAdp,
+    range = pawnRange,
+    attackTable = chessAttackTable,
+    dmgTable = chessDmgTable
+});
+
+local blackWeapon = WeaponType.New({
+    tpd = blackAttackAdp,
+    range = pawnRange,
+    attackTable = chessAttackTable,
+    dmgTable = chessDmgTable
+});
+
 local whiteMove = MovementDescType.New({
     tpd = whiteAdp,
     range = pawnRange,
     tileCT = tileCT,
     unitCT = unitCT,
-    maxGas = -1
+    maxGas = -1,
 });
 
 local blackMove = MovementDescType.New({
@@ -52,10 +80,10 @@ local blackMove = MovementDescType.New({
 });
 
 function CreateWhitePawn()
-    return {name = name, moveType = whiteMove}
+    return {name = name, moveType = whiteMove, weapons = {whiteWeapon}}
 end
 
 function CreateBlackPawn()
-    return {name = name, moveType = blackMove}
+    return {name = name, moveType = blackMove, weapons = {blackWeapon}}
 end
 
