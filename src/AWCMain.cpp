@@ -139,7 +139,7 @@ int main(int argc, const char** args)
         if(game.IsOver())
         {
             std::cout << "Game is over!!!\n";
-            std::cout << "Team " << game.GetPlayer(0).GetTeamId() << " wins\n";
+            std::cout << "Team " << game.GetPlayer(0)->GetTeamId() << " wins\n";
             break;
         }
     }

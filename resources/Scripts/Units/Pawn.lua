@@ -16,7 +16,7 @@ local tileCT = {
 
 local unitCT = {
     entries = {
-        {id = 0, cost = 1}
+        {id = 0, cost = -1}
     },
     default = -1;
 }

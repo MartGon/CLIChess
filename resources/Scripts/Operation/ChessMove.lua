@@ -1,6 +1,4 @@
 
-
-
 function Execute(game, process)
 
     local map = game:GetMap(mapIndex); -- mapIndex is defined int this env
@@ -12,8 +10,8 @@ function Execute(game, process)
         if unit then
             if origin ~= dest then
                 
-                local move = unit:CalculateMovement(map, origin);
-                if move:CanMove(dest) then -- dest is also defined in this env
+                movement = unit:CalculateMovement(map, origin);
+                if movement:CanMove(dest) then -- dest is also defined in this env
                     
                     destUnit = map:GetUnit(dest);
                     if destUnit ~= unit then
