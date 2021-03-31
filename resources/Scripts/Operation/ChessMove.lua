@@ -11,12 +11,16 @@ function Execute(game, process)
             if origin ~= dest then
 
                 destUnit = map:GetUnit(dest);
-                if destUnit and destUnit ~= unit then
-                    print("Unit found on "..tostring(dest).." calculating Attack..");
-                    local attack = unit:CalculateAttack(0, map, origin);
-                    if attack:CanAttack(dest) then
+                if destUnit then
+                    local destOwner = destUnit:GetOwner();
+                    if destOwner:GetId() ~= owner:GetId() then
+                        local attack = unit:CalculateAttack(0, map, origin);
+                        if attack:CanAttack(dest) then
 
-                        map:RemoveUnit(dest) -- Remove to calculate movement
+                            map:RemoveUnit(dest) -- Remove to calculate movement
+                        end
+                    else
+                        error("Cannot capture a friendly unit");
                     end
                 end
                 
