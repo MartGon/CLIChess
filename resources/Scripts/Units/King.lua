@@ -39,6 +39,12 @@ function CreateKing()
         dmgTable = chessDmgTable
     });
 
-    return {name = name, moveType = moveType, weapons = { weapon }};
+    local function Handler(event, guid, game)
+        print("Hanlding some event");
+    end
+
+    local eh = {opType = 9, callback = Handler, notiType = 1};
+
+    return {name = name, moveType = moveType, weapons = { weapon }, eventHandlers = {eh}};
 
 end

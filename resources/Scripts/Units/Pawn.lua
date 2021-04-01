@@ -4,7 +4,7 @@ require('Dirs')
 local name = "Pawn";
 local pawnRange = {
     min = 0,
-    max = 1
+    max = 2
 }
 
 local tileCT = {
@@ -25,39 +25,33 @@ local unitCT = {
 
 local whiteAdp = AreaDesc.New({
     directions = {
-        Dirs.n
+        Dirs.s, Dirs.se, Dirs.sw
     }
 });
 
 local blackAdp = AreaDesc.New({
     directions = {
-        Dirs.s;
+        Dirs.n, Dirs.ne, Dirs.nw
     }
 });
 
-local whiteAttackAdp = AreaDesc.New({
-    directions = {
-        Dirs.ne,
-        Dirs.nw
-    }
-})
+--[[
+    This way, the only handlers we need are:
+    1. Invalid diagonal movement. The movement is canceled if there are no enemy pieces at the dest or
+        there wasn't a previous enemy pawn double move on that column.
+    2. Cancel every move with a range of 2 if it isn't the first move that pawn makes in the game.
+]]--
 
-local blackAttackAdp = AreaDesc.New({
-    directions = {
-        Dirs.se,
-        Dirs.sw
-    }
-})
 
 local whiteWeapon = WeaponType.New({
-    tpd = whiteAttackAdp,
+    tpd = whiteAdp,
     range = pawnRange,
     attackTable = chessAttackTable,
     dmgTable = chessDmgTable
 });
 
 local blackWeapon = WeaponType.New({
-    tpd = blackAttackAdp,
+    tpd = blackAdp,
     range = pawnRange,
     attackTable = chessAttackTable,
     dmgTable = chessDmgTable
