@@ -43,7 +43,7 @@ function CreateKing()
         print("Hanlding some event");
     end
 
-    local eh = {opType = 9, callback = Handler, notiType = 1};
+    local eh = {opType = 9, callback = Handler, notiType = EventNotification.Type.PRE};
 
     return {name = name, moveType = moveType, weapons = { weapon }, eventHandlers = {eh}};
 
