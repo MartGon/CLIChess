@@ -47,6 +47,12 @@ local whiteAdp = AreaDesc.New({
     }
 });
 
+local whiteAttackAdp = AreaDesc.New({
+    directions = {
+        Dirs.se, Dirs.sw
+    }
+})
+
 local blackAdp = AreaDesc.New({
     directions = {
         Dirs.n, Dirs.ne, Dirs.nw
@@ -71,6 +77,12 @@ local blackAdp = AreaDesc.New({
     }
 });
 
+local blackAttackAdp = AreaDesc.New({
+    directions = {
+        Dirs.ne, Dirs.nw
+    }
+})
+
 --[[
     This way, the only handlers we need are:
     1. Invalid diagonal movement. The movement is canceled if there are no enemy pieces at the dest or
@@ -80,14 +92,14 @@ local blackAdp = AreaDesc.New({
 
 
 local whiteWeapon = WeaponType.New({
-    tpd = whiteAdp,
+    tpd = whiteAttackAdp,
     range = pawnRange,
     attackTable = chessAttackTable,
     dmgTable = chessDmgTable
 });
 
 local blackWeapon = WeaponType.New({
-    tpd = blackAdp,
+    tpd = blackAttackAdp,
     range = pawnRange,
     attackTable = chessAttackTable,
     dmgTable = chessDmgTable
@@ -140,13 +152,15 @@ local function HasAlreadyMoved(guid)
     local hasMoved = false;
     for i = 1, game:GetHistoryCount() do
         local p = game:GetHistoryProcess(i);
-        local args = p.operation:GetArgs();
-        
-        local unitGUID = args.unit:GetGUID()
-        print("On process "..i.." unit with guid "..tostring(unitGUID).." moved");
-        if unitGUID == guid then
-            hasMoved = true;
-            break;
+        if p.trigger.type == Trigger.PLAYER then
+            local args = p.operation:GetArgs();
+            
+            local unitGUID = args.unit:GetGUID()
+            print("On process "..i.." unit with guid "..tostring(unitGUID).." moved");
+            if unitGUID == guid then
+                hasMoved = true;
+                break;
+            end
         end
     end
 
