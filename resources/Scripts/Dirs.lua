@@ -7,4 +7,6 @@ Dirs = {
     nw = Vector2.new(-1, 1),
     se = Vector2.new(1, -1),
     sw = Vector2.new(-1, -1),
+    n2 = Vector2.new(0, 2),
+    s2 = Vector2.new(0, -2)
 }

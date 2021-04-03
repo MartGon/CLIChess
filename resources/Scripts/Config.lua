@@ -20,11 +20,6 @@ local queenType = DB:AddUnitType(CreateQueen()); -- 4
 local whitePawnType = DB:AddUnitType(CreateWhitePawn()); -- 5
 local blackPawnType = DB:AddUnitType(CreateBlackPawn()); -- 6
 
-WHITE_PAWN_TYPE = whitePawnType:GetId();
-BLACK_PAWN_TYPE = blackPawnType:GetId();
-print("White pawns are"..WHITE_PAWN_TYPE);
-print("Black pawns are"..BLACK_PAWN_TYPE);
-
 -- Tiles
 local tileType = DB:AddTileType("ChessTile");
 

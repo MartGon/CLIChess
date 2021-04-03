@@ -109,49 +109,83 @@ local blackMove = MovementDescType.New({
     maxGas = -1
 });
 
-local function onDiagonalMove(event, guid)
-    local subType = guid.subType;
+local function onDiagonalMove(event, guid) 
     
-    if subType == WHITE_PAWN_TYPE or subType == BLACK_PAWN_TYPE then
-        
-        local p = event.process;
-        local op = p.operation;
-        local args = op:GetArgs();
-        
-        local map = game:GetMap(0);
-        local unit = map:GetUnit(args.origin);
-        if unit then
-            local unitGUID = unit:GetGUID();
-            print("Listener GUID is "..tostring(guid));
-            print("UnitGUID is "..tostring(unitGUID));
-            
-            if unitGUID == guid then
-                print("That pawn is me!");
-                local move = args.dest - args.origin;
+    local p = event.process;
+    local op = p.operation;
+    local args = op:GetArgs();
+    
+    local map = game:GetMap(0);
+    local unit = map:GetUnit(args.origin);
+    if unit then
+        local unitGUID = unit:GetGUID();
+        if unitGUID == guid then
+            local move = args.dest - args.origin;
 
-                local isBlackDiagonal = move == Dirs.se or move == Dirs.sw;
-                local isWhiteDiagnoal = move == Dirs.ne or move == Dirs.nw;
-                if(isBlackDiagonal or isWhiteDiagnoal) then
-                    local destUnit = map:GetUnit(args.dest);
-                    if destUnit == nil then
-                        print("Pawns can only move diagonally if capturing");
-                        game:CancelProcess(p);
-                    end
+            local isBlackDiagonal = move == Dirs.se or move == Dirs.sw;
+            local isWhiteDiagnoal = move == Dirs.ne or move == Dirs.nw;
+            if(isBlackDiagonal or isWhiteDiagnoal) then
+                local destUnit = map:GetUnit(args.dest);
+                if destUnit == nil then
+                    print("Pawns can only move diagonally if capturing");
+                    game:CancelProcess(p);
                 end
-            else
-                print("Pawn "..unitGUID.id.." ain't me, I'm "..guid.id);
             end
         end
     end
 end
 
-local eh = {opType = 9, callback = onDiagonalMove, notiType = 1};
+local function HasAlreadyMoved(guid)
+
+    local hasMoved = false;
+    for i = 1, game:GetHistoryCount() do
+        local p = game:GetHistoryProcess(i);
+        local args = p.operation:GetArgs();
+        
+        local unitGUID = args.unit:GetGUID()
+        print("On process "..i.." unit with guid "..tostring(unitGUID).." moved");
+        if unitGUID == guid then
+            hasMoved = true;
+            break;
+        end
+    end
+
+    return hasMoved;
+end
+
+local function IsDoubleMove(move)
+    return move == Dirs.n2 or move == Dirs.s2;
+end
+
+local function onMove(event, guid)
+    local p = event.process;
+    local op = p.operation;
+    local args = op:GetArgs();
+    
+    local map = game:GetMap(0);
+    local unit = map:GetUnit(args.origin);
+    if unit then
+        local unitGUID = unit:GetGUID();
+        if unitGUID == guid then
+            local move = args.dest - args.origin;
+            if IsDoubleMove(move) then
+                if HasAlreadyMoved(guid) then
+                    print("Pawns can only move two tiles on their first move");
+                    game:CancelProcess(p);
+                end
+            end
+        end
+    end
+end
+
+local diagonalEH = {opType = 9, callback = onDiagonalMove, notiType = EventNotification.Type.PRE};
+local doubleMoveEH = {opType = Operation.Type.SCRIPT, callback = onMove, notiType = EventNotification.Type.PRE};
 
 function CreateWhitePawn()
-    return {name = name, moveType = whiteMove, weapons = {whiteWeapon}, eventHandlers = {eh}}
+    return {name = name, moveType = whiteMove, weapons = {whiteWeapon}, eventHandlers = {diagonalEH, doubleMoveEH}}
 end
 
 function CreateBlackPawn()
-    return {name = name, moveType = blackMove, weapons = {blackWeapon}, eventHandlers = {eh}}
+    return {name = name, moveType = blackMove, weapons = {blackWeapon}, eventHandlers = {diagonalEH, doubleMoveEH}}
 end
 
