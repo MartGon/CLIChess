@@ -1,4 +1,5 @@
 require('Dirs')
+require("Units/ChessHandler");
 
 -- Common
 local name = "Pawn";
@@ -152,7 +153,7 @@ local function HasAlreadyMoved(guid)
     local hasMoved = false;
     for i = 1, game:GetHistoryCount() do
         local p = game:GetHistoryProcess(i);
-        if p.trigger.type == Trigger.PLAYER then
+        if p.trigger.type == Trigger.Type.PLAYER then
             local args = p.operation:GetArgs();
             
             local unitGUID = args.unit:GetGUID()
@@ -196,10 +197,10 @@ local diagonalEH = {opType = 9, callback = onDiagonalMove, notiType = EventNotif
 local doubleMoveEH = {opType = Operation.Type.SCRIPT, callback = onMove, notiType = EventNotification.Type.PRE};
 
 function CreateWhitePawn()
-    return {name = name, moveType = whiteMove, weapons = {whiteWeapon}, eventHandlers = {diagonalEH, doubleMoveEH}}
+    return {name = name, moveType = whiteMove, weapons = {whiteWeapon}, eventHandlers = {diagonalEH, doubleMoveEH, CheckEH}}
 end
 
 function CreateBlackPawn()
-    return {name = name, moveType = blackMove, weapons = {blackWeapon}, eventHandlers = {diagonalEH, doubleMoveEH}}
+    return {name = name, moveType = blackMove, weapons = {blackWeapon}, eventHandlers = {diagonalEH, doubleMoveEH, CheckEH}}
 end
 

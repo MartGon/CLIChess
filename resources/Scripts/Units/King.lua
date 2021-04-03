@@ -1,4 +1,5 @@
 require('Dirs');
+require("Units/ChessHandler");
 
 function CreateKing()
 
@@ -39,12 +40,6 @@ function CreateKing()
         dmgTable = chessDmgTable
     });
 
-    local function Handler(event, guid, game)
-        print("Hanlding some event");
-    end
-
-    local eh = {opType = 9, callback = Handler, notiType = EventNotification.Type.PRE};
-
-    return {name = name, moveType = moveType, weapons = { weapon }, eventHandlers = {eh}};
+    return {name = name, moveType = moveType, weapons = { weapon }, eventHandlers = {CheckEH}};
 
 end

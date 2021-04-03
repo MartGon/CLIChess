@@ -1,4 +1,6 @@
 require('Dirs')
+require("Units/ChessHandler");
+
 
 function CreateQueen()
 
@@ -89,6 +91,6 @@ function CreateQueen()
         dmgTable = chessDmgTable
     });
 
-    return {name = name, moveType = moveType, weapons = {weapon}};
+    return {name = name, moveType = moveType, weapons = {weapon}, eventHandlers = {CheckEH}};
 
 end

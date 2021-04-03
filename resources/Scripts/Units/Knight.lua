@@ -1,4 +1,5 @@
 require("Dirs")
+require("Units/ChessHandler");
 
 local KnigthDirs = {
     {x = 2, y = 1},
@@ -47,6 +48,6 @@ function CreateKnight()
         dmgTable = chessDmgTable
     });
 
-    return {name = name, moveType = moveType, weapons = {weapon}};
+    return {name = name, moveType = moveType, weapons = {weapon}, eventHandlers = {CheckEH}};
 
 end

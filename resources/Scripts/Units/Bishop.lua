@@ -1,4 +1,5 @@
 require ("Dirs")
+require("Units/ChessHandler");
 
 function CreateBishop()
 
@@ -65,6 +66,6 @@ function CreateBishop()
         dmgTable = chessDmgTable
     })
 
-    return {name = name, moveType = moveType, weapons = {weapon}};
+    return {name = name, moveType = moveType, weapons = {weapon}, eventHandlers = {CheckEH}};
 
 end

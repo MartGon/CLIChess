@@ -7,16 +7,18 @@ function Execute(game, process)
     if unit then
         local owner = unit:GetOwner();
         local trigger = process.trigger;
-        if trigger.type == Trigger.PLAYER and owner:GetId() == trigger.id then
+        if trigger.type == Trigger.Type.PLAYER and owner:GetId() == trigger.id then
             if origin ~= dest then
 
                 destUnit = map:GetUnit(dest);
+                local canAttack = false;
                 if destUnit then
                     local destOwner = destUnit:GetOwner();
                     if destOwner:GetId() ~= owner:GetId() then
                         local attack = unit:CalculateAttack(0, map, origin);
-                        if attack:CanAttack(dest) then
-
+                        canAttack = attack:CanAttack(dest);
+                        if canAttack then
+                            print("Can attack pos");
                             map:RemoveUnit(dest) -- Remove to calculate movement
                         end
                     else
@@ -32,7 +34,7 @@ function Execute(game, process)
 
                     print("Unit moved successfully from "..tostring(origin).." to "..tostring(dest));
                 else
-                    if destUnit then
+                    if canAttack and destUnit then
                         map:AddUnit(dest, destUnit); -- restore unit if cannot move there
                     end
                     
