@@ -1,5 +1,3 @@
-require("Dirs")
-require("Units/ChessTables")
 
 function CreateRook()
 

@@ -1,5 +1,4 @@
-require("Dirs")
-require("Units/ChessHandler");
+
 
 local KnigthDirs = {
     {x = 2, y = 1},

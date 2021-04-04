@@ -41,11 +41,14 @@ int main(int argc, const char** args)
 
     std::string SCRIPTS_DIR = std::string{RESOURCES_DIR} + "Scripts/Operation/";
     std::string moveSP = SCRIPTS_DIR + "ChessMove.lua";
+    std::string castleSP = SCRIPTS_DIR + "Castle.lua";
 
     auto moveST = -1;
+    auto castleST = -1;
     try
     {
         moveST = sGame.CreateScriptType(moveSP);
+        castleST = sGame.CreateScriptType(castleSP);
 
         std::cout << "All scripts parsed were correctly loaded\n";
     }
@@ -77,6 +80,15 @@ int main(int argc, const char** args)
     };
     subject.Register(Script::SCRIPT, errCb, Event::Notification::Type::ERROR);
 
+    // Auto pass turn
+    auto cb = [](const Event::Notification::Notification noti, Entity::GUID entity, Game& game){
+        game.PassTurn();
+
+        auto nextTurn = game.GetCurrentTurn();
+        std::cout << "Now it's Player " << nextTurn.playerIndex << " turn\n";
+    };
+    subject.Register(Script::SCRIPT, cb, Event::Notification::Type::POST);
+
     // Move Command
     auto parseMove = [&moveST, &sGame](std::vector<std::string> args)
     {
@@ -96,32 +108,35 @@ int main(int argc, const char** args)
         std::cout << "script: " << s << '\n';
         auto& st = sGame.GetScriptTable(s);
 
+        st.Set("type", "move");
         st.Set("mapIndex", 0);
         st.SetDataCopy<Script::UserData::Vector2>("origin", origin);
         st.SetDataCopy<Script::UserData::Vector2>("dest", dest);
 
         auto& game = sGame.GetGame();
         Process::Trigger::Trigger t{Process::Trigger::Type::PLAYER, game.GetCurrentTurn().playerIndex};
-        auto pid = sGame.PushScript(s, t);
-
-        auto& subject = game.GetSubject();
-        auto cb = [pid](const Event::Notification::Notification noti, Entity::GUID entity, Game& game){
-            if(noti.process.id == pid)
-            {
-                game.PassTurn();
-
-                auto nextTurn = game.GetCurrentTurn();
-                std::cout << "Now it's Player " << nextTurn.playerIndex << " turn\n";
-
-                auto& subject = game.GetSubject();
-                subject.Unregister(entity);
-            }
-        };
-        subject.Register(Script::SCRIPT, cb, Event::Notification::Type::POST);
-
+        sGame.PushScript(s, t);
+        
         sGame.GetGame().Run();
     };
     std::shared_ptr<CommandNS::Custom> moveComm{new CommandNS::Custom{game, parseMove}};
+
+    auto parseCastle = [&castleST, &sGame](std::vector<std::string> args)
+    {
+        std::string side = args.size() > 0 ? args[0] : "null";
+
+        auto s = sGame.CreateScript(castleST);
+        auto& sTable = sGame.GetScriptTable(s);
+        sTable.Set("side", side);
+        sTable.Set("type", "castle");
+
+        auto& game = sGame.GetGame();
+        Process::Trigger::Trigger t{Process::Trigger::Type::PLAYER, game.GetCurrentTurn().playerIndex};
+        sGame.PushScript(s, t);
+
+        sGame.GetGame().Run();
+    };
+    std::shared_ptr<CommandNS::Custom> castleComm{new CommandNS::Custom{game, parseCastle}};
 
     // Add command to console
     console.AddCommand("print", printMapComm);
@@ -129,6 +144,7 @@ int main(int argc, const char** args)
     console.AddCommand("pass", passComm);
     console.AddCommand("exit", exitComm);
     console.AddCommand("move", moveComm);
+    console.AddCommand("castle", castleComm);
     console.AddCommand("report", reportComm);
     console.AddCommand("help", helpComm);
 

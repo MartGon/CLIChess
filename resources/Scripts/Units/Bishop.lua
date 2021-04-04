@@ -1,5 +1,4 @@
-require ("Dirs")
-require("Units/ChessHandler");
+
 
 function CreateBishop()
 

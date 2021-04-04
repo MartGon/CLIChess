@@ -1,5 +1,4 @@
-require('Dirs')
-require("Units/ChessHandler");
+
 
 -- Common
 local name = "Pawn";
@@ -128,44 +127,26 @@ local function onDiagonalMove(event, guid)
     local op = p.operation;
     local args = op:GetArgs();
     
-    local map = game:GetMap(0);
-    local unit = map:GetUnit(args.origin);
-    if unit then
-        local unitGUID = unit:GetGUID();
-        if unitGUID == guid then
-            local move = args.dest - args.origin;
+    if args.type == "move" then
+        local map = game:GetMap(0);
+        local pawn = map:GetUnit(args.origin);
+        if pawn then
+            local pawnGUID = pawn:GetGUID();
+            if pawnGUID == guid then
+                local move = args.dest - args.origin;
 
-            local isBlackDiagonal = move == Dirs.se or move == Dirs.sw;
-            local isWhiteDiagnoal = move == Dirs.ne or move == Dirs.nw;
-            if(isBlackDiagonal or isWhiteDiagnoal) then
-                local destUnit = map:GetUnit(args.dest);
-                if destUnit == nil then
-                    print("Pawns can only move diagonally if capturing");
-                    game:CancelProcess(p);
+                local isBlackDiagonal = move == Dirs.se or move == Dirs.sw;
+                local isWhiteDiagnoal = move == Dirs.ne or move == Dirs.nw;
+                if(isBlackDiagonal or isWhiteDiagnoal) then
+                    local destUnit = map:GetUnit(args.dest);
+                    if destUnit == nil then
+                        print("Pawns can only move diagonally if capturing");
+                        game:CancelProcess(p);
+                    end
                 end
             end
         end
     end
-end
-
-local function HasAlreadyMoved(guid)
-
-    local hasMoved = false;
-    for i = 1, game:GetHistoryCount() do
-        local p = game:GetHistoryProcess(i);
-        if p.trigger.type == Trigger.Type.PLAYER then
-            local args = p.operation:GetArgs();
-            
-            local unitGUID = args.unit:GetGUID()
-            print("On process "..i.." unit with guid "..tostring(unitGUID).." moved");
-            if unitGUID == guid then
-                hasMoved = true;
-                break;
-            end
-        end
-    end
-
-    return hasMoved;
 end
 
 local function IsDoubleMove(move)
@@ -177,16 +158,18 @@ local function onMove(event, guid)
     local op = p.operation;
     local args = op:GetArgs();
     
-    local map = game:GetMap(0);
-    local unit = map:GetUnit(args.origin);
-    if unit then
-        local unitGUID = unit:GetGUID();
-        if unitGUID == guid then
-            local move = args.dest - args.origin;
-            if IsDoubleMove(move) then
-                if HasAlreadyMoved(guid) then
-                    print("Pawns can only move two tiles on their first move");
-                    game:CancelProcess(p);
+    if args.type == "move" then
+        local map = game:GetMap(0);
+        local pawn = map:GetUnit(args.origin);
+        if pawn then
+            local pawnGUID = pawn:GetGUID();
+            if pawnGUID == guid then
+                local move = args.dest - args.origin;
+                if IsDoubleMove(move) then
+                    if HasAlreadyMoved(guid) then
+                        print("Pawns can only move two tiles on their first move");
+                        game:CancelProcess(p);
+                    end
                 end
             end
         end
