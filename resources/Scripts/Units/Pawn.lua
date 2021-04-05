@@ -137,7 +137,7 @@ local function GetLastPlayerOp()
 end
 
 local function IsPawn(unitGUID) 
-    return unitGUID.subType == WHITE_PAWN_TYPE or unitGUID.subType == BLACK_PAWN_TYPE;
+    return unitGUID.subType == UNIT_TYPES.whitePawn:GetId() or unitGUID.subType == UNIT_TYPES.blackPawn:GetId();
 end
 
 local function IsDoubleMove(move)
@@ -197,21 +197,69 @@ local function onDiagonalMove(event, guid)
     end
 end
 
+local function GetPromotionUnitType()
+    
+    local type = nil
+    while type == nil do
+        print("Promotion. Please choose a unit type to promote this pawn. Valid types are: rook, queen, bishop, knight");
+        local typeStr = string.lower(io.stdin:read());
+        type = UNIT_TYPES[typeStr];
+
+        if type == nil then
+            print("Type "..typeStr.." is not a valid type.");
+        end
+    end
+
+    return type;
+end
+
 local function onMove(event, guid)
     local p = event.process;
     local op = p.operation;
     local args = op:GetArgs();
     
     if args.type == "move" then
+
         local map = game:GetMap(0);
         local pawn = map:GetUnit(args.origin);
         if pawn then
             local pawnGUID = pawn:GetGUID();
             if pawnGUID == guid then
+
+                -- Cancel double move outside of first move
                 local move = args.dest - args.origin;
                 if IsDoubleMove(move) then
                     if HasAlreadyMoved(guid) then
                         print("Pawns can only move two tiles on their first move");
+                        game:CancelProcess(p);
+                    end
+                end
+            end
+        end
+
+    end
+end
+
+local function afterMove(event, guid)
+    local p = event.process;
+    local op = p.operation;
+    local args = op:GetArgs();
+    
+    if args.type == "move" then
+
+        local map = game:GetMap(0);
+        local pawn = args.unit;
+        if pawn then
+            local pawnGUID = pawn:GetGUID();
+            if pawnGUID == guid then
+                -- Check for promotion
+                if args.dest.y == 0 or args.dest.y == 7 then
+                    local type = GetPromotionUnitType();
+                    if type then
+                        map:RemoveUnit(args.dest);
+                        local owner = pawn:GetOwner();
+                        map:AddUnit(args.dest, type:CreateUnit(owner));
+                    else
                         game:CancelProcess(p);
                     end
                 end
@@ -222,12 +270,13 @@ end
 
 local diagonalEH = {opType = 9, callback = onDiagonalMove, notiType = EventNotification.Type.PRE};
 local doubleMoveEH = {opType = Operation.Type.SCRIPT, callback = onMove, notiType = EventNotification.Type.PRE};
+local promoteEH = {opType = Operation.Type.SCRIPT, callback = afterMove, notiType = EventNotification.Type.POST}
 
 function CreateWhitePawn()
-    return {name = name, moveType = whiteMove, weapons = {whiteWeapon}, eventHandlers = {diagonalEH, doubleMoveEH, CheckEH}}
+    return {name = name, moveType = whiteMove, weapons = {whiteWeapon}, eventHandlers = {diagonalEH, doubleMoveEH, promoteEH, CheckEH}}
 end
 
 function CreateBlackPawn()
-    return {name = name, moveType = blackMove, weapons = {blackWeapon}, eventHandlers = {diagonalEH, doubleMoveEH, CheckEH}}
+    return {name = name, moveType = blackMove, weapons = {blackWeapon}, eventHandlers = {diagonalEH, doubleMoveEH, promoteEH, CheckEH}}
 end
 

@@ -25,8 +25,8 @@ local queenType = DB:AddUnitType(CreateQueen()); -- 4
 local whitePawnType = DB:AddUnitType(CreateWhitePawn()); -- 5
 local blackPawnType = DB:AddUnitType(CreateBlackPawn()); -- 6
 
-WHITE_PAWN_TYPE = whitePawnType:GetId();
-BLACK_PAWN_TYPE = blackPawnType:GetId();
+UNIT_TYPES = { rook = rookType, bishop = bishopType, knight = knightType, queen = queenType,
+                whitePawn = whitePawnType, blackPawn = blackPawnType}
 
 WhiteKing = kingType:CreateUnit(white);
 BlackKing = kingType:CreateUnit(black);
@@ -53,6 +53,7 @@ end
 
 map:AddUnit({x = 2, y = 3}, blackPawnType:CreateUnit(black));
 map:AddUnit({x = 1, y = 5}, whitePawnType:CreateUnit(white));
+map:AddUnit({x = 1, y = 1}, whitePawnType:CreateUnit(white));
 
 map:AddUnit(Vector2.new(0, 7), rookType:CreateUnit(white));
 --map:AddUnit({x = 1, y = 7}, knightType:CreateUnit(white));
