@@ -1,66 +1,24 @@
 
 function Execute(game, process)
 
-    local map = game:GetMap(mapIndex); -- mapIndex is defined int this env
-    unit = map:GetUnit(origin); -- origin is defined in this env
+    local map = game:GetMap(mapIndex);
+    local playerId = process.trigger.id;
 
-    if unit then
-        local owner = unit:GetOwner();
-        local trigger = process.trigger;
-        if trigger.type == Trigger.Type.PLAYER and owner:GetId() == trigger.id then
-            if origin ~= dest then
+    local canMove, res = CanMove(map, origin, dest, playerId);
+    if canMove then
+        unit, destUnit = ChessMove(map, origin, dest);
 
-                destUnit = map:GetUnit(dest);
-                local canAttack = false;
-                if destUnit then
-                    local destOwner = destUnit:GetOwner();
-                    if destOwner:GetId() ~= owner:GetId() then
-                        local attack = unit:CalculateAttack(0, map, origin);
-                        canAttack = attack:CanAttack(dest);
-                        if canAttack then
-                            print("Can attack pos");
-                            map:RemoveUnit(dest) -- Remove to calculate movement
-                        end
-                    else
-                        error("Cannot capture a friendly unit");
-                    end
-                end
-                
-                movement = unit:CalculateMovement(map, origin);
-                if movement:CanMove(dest) then
-                    
-                    map:RemoveUnit(origin);
-                    map:AddUnit(dest, unit);
-
-                    print("Unit moved successfully from "..tostring(origin).." to "..tostring(dest));
-                else
-                    if canAttack and destUnit then
-                        map:AddUnit(dest, destUnit); -- restore unit if cannot move there
-                    end
-                    
-                    error ("Unit cannot move to that location")
-                end
-
-            else
-                error("Origin and destination are the same position")
-            end
-        else
-            error("Unit at "..tostring(origin).." doesn't belong to player "..trigger.id);
-        end
+        print(res);
     else
-        error("Unit not found")
+        error(res);
     end
+
 end
 
 function Undo(game)
 
     local map = game:GetMap(mapIndex);
 
-    map:RemoveUnit(dest);
-    map:AddUnit(origin, unit);
-    
-    if destUnit then
-        map:AddUnit(dest, destUnit)
-    end
+    UndoChessMove(map, origin, dest, destUnit);
 
 end

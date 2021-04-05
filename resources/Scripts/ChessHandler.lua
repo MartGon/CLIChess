@@ -1,4 +1,79 @@
 
+local function isKing(unit)
+    return unit:GetGUID() == WhiteKing:GetGUID() or unit:GetGUID() == BlackKing:GetGUID();
+end
+
+function CanMove(map, origin, dest, playerId)
+
+    local unit = map:GetUnit(origin); -- origin is defined in this env
+
+    if unit then
+        local owner = unit:GetOwner();
+        if owner:GetId() == playerId then
+            if origin ~= dest then
+
+                local destUnit = map:GetUnit(dest);
+                local canAttack = false;
+                if destUnit then
+                    local destOwner = destUnit:GetOwner();
+                    if destOwner:GetId() ~= owner:GetId() then
+                        local attack = unit:CalculateAttack(0, map, origin);
+                        canAttack = attack:CanAttack(dest);
+                        if canAttack then
+                            map:RemoveUnit(dest) -- Remove to calculate movement
+                        end
+                    else
+                        return false, "Cannot capture a friendly unit";
+                    end
+                end
+                
+                local movement = unit:CalculateMovement(map, origin);
+                if canAttack and destUnit then
+                    map:AddUnit(dest, destUnit); -- restore unit if cannot move there
+                end
+
+                if movement:CanMove(dest) then
+                    return true, "Unit moved successfully from "..tostring(origin).." to "..tostring(dest);
+                else
+                    return false, "Unit cannot move to that location";
+                end
+
+            else
+                return false, "Origin and destination are the same position";
+            end
+        else
+            return false, "Unit at "..tostring(origin).." doesn't belong to player "..playerId;
+        end
+    end
+
+    return false, "Unit not found";
+end
+
+function ChessMove(map, origin, dest)
+    local unit = map:GetUnit(origin); 
+
+    local destUnit = map:GetUnit(dest);
+    if destUnit then
+        map:RemoveUnit(dest);
+    end
+
+    map:RemoveUnit(origin);
+    map:AddUnit(dest, unit);
+
+    return unit, destUnit;
+end
+
+function  UndoChessMove(map, origin, dest, destUnit)
+    local unit = map:GetUnit(dest); 
+
+    map:RemoveUnit(dest);
+    map:AddUnit(origin, unit);
+    
+    if destUnit then
+        map:AddUnit(dest, destUnit)
+    end
+end
+
 function HasAlreadyMoved(guid)
 
     local hasMoved = false;
@@ -25,72 +100,38 @@ function HasAlreadyMoved(guid)
     return hasMoved;
 end
 
-function IsPosOnCheckByUnit(targetPos, attackerGUID, targetOwnerId)
+function IsPosOnCheckByUnit(targetPos, attackerGUID)
     local map = game:GetMap(0);
-
-    -- If a targetUnit is found, we take that owner Id and ignore the one
-    -- that was provided
-    local targetUnit = map:GetUnit(targetPos);
-    if targetUnit then
-        local targetOwner = targetUnit:GetOwner();
-        targetOwnerId = targetOwner:GetId();
-    end
 
     local attackerPos = game:GetUnitPos(attackerGUID);
     if attackerPos then
         attackerPos = attackerPos.pos;
         local attacker = map:GetUnit(attackerPos);
-        if targetOwnerId and attacker then
-            local attackerOwner = attacker:GetOwner();
-            if targetOwnerId ~= attackerOwner:GetId() then
-                local attack = attacker:CalculateAttack(0, map, attackerPos);
-                if attack:CanAttack(targetPos) then
-                    
-                    -- Remove target unit before calculating movement
-                    if targetUnit then
-                        map:RemoveUnit(targetPos);    
-                    end
-                    
-                    local move = attacker:CalculateMovement(map, attackerPos);
-                    local canMove = move:CanMove(targetPos);
-                    
-                    if canMove then
-                        print("Unit at "..tostring(attackerPos).." is checking unit at pos "..tostring(targetPos));
-                    end
-                    
-                    -- Restore prev. removed unit
-                    if targetUnit then
-                        map:AddUnit(targetPos, targetUnit);
-                    end
+        local attackerOwner = attacker:GetOwner();
 
-                    return canMove;
-                end
-            end
+        local canMove, res = CanMove(map, attackerPos, targetPos, attackerOwner:GetId());
+        if canMove then
+            print("Unit at "..tostring(attackerPos).." is checking unit at pos "..tostring(targetPos));
+            return true;
         end
     end
     
     return false;
 end
 
-function IsPosOnCheckByPlayer(targetPos, attackerPlayerId, defenderPlayerId)
+function IsPosOnCheckByPlayer(targetPos, attackerPlayerId)
 
     local map = game:GetMap(0);
-    local mapSize = map:GetSize();
+    local units = GetPlayerUnits(map, attackerPlayerId);
+    for pos, unit  in pairs(units) do
 
-    for x = 0, mapSize.x - 1 do
-        for y = 0, mapSize.y - 1 do
-            local pos = Vector2.new(x, y);
-            local unit = map:GetUnit(pos);
-
-            if unit then
-                local ownerId = unit:GetOwner():GetId();
-                if ownerId == attackerPlayerId then
-                    if IsPosOnCheckByUnit(targetPos, unit:GetGUID(), defenderPlayerId) then
-                        return true;
-                    end
-                end
+        local ownerId = unit:GetOwner():GetId();
+        if ownerId == attackerPlayerId then
+            if IsPosOnCheckByUnit(targetPos, unit:GetGUID()) then
+                return true;
             end
         end
+
     end
 
     return false;
@@ -100,44 +141,106 @@ function OnChessCheck(event, guid)
     
     local trigger = event.process.trigger;
     local args = event.process.operation:GetArgs();
+    if trigger.type == Trigger.Type.PLAYER then
+        if args.type == "move" then
 
-    if args.type == "move" then
+            local map = game:GetMap(0);
+            if map:IsPosValid(args.origin) and map:IsPosValid(args.dest) then
 
-        local map = game:GetMap(0);
-        if map:IsPosValid(args.origin) and map:IsPosValid(args.dest) then
+                local unit = map:GetUnit(args.origin);
+                if unit then
+                    
+                    local _, destUnit = ChessMove(map, args.origin, args.dest);
 
-            
-            local unit = map:GetUnit(args.origin);
-            if unit then
-                -- Apply movement, then check state
-                local destUnit = map:GetUnit(args.dest);
-                map:RemoveUnit(args.dest);
-                map:RemoveUnit(args.origin);
-                map:AddUnit(args.dest, unit);
-                
-                -- Check
-                if trigger.type == Trigger.Type.PLAYER then
                     local playerId = trigger.id;
                     local king = playerId == 0 and WhiteKing or BlackKing;
                     local kingPos = game:GetUnitPos(king:GetGUID()).pos;
-
-                    if IsPosOnCheckByUnit(kingPos, guid) then
+                    
+                    -- Check
+                    if IsPosOnCheckByPlayer(kingPos, playerId) then
                         print("Cannot perform a move that would leave your king on check!");
                         game:CancelProcess(event.process);
                     end
 
-                end
-
-                -- Reapply state after check
-                map:RemoveUnit(args.dest);
-                map:AddUnit(args.origin, unit);
-                if destUnit then
-                    map:AddUnit(args.dest, destUnit);
+                    -- Reapply state after check
+                    UndoChessMove(map, args.origin, args.dest, destUnit);
                 end
             end
         end
     end
 end
 
+function GetPlayerUnits(map, playerId)
+
+    local units = {}
+    local mapSize = map:GetSize();
+    for x = 0, mapSize.x -1 do
+        for y = 0, mapSize.y - 1 do
+            local pos = Vector2.new(x, y);
+            local unit = map:GetUnit(pos);
+            if unit and unit:GetOwner():GetId() == playerId then
+                units[pos] = unit;
+            end
+        end
+    end
+
+    return units
+end
+
+function IsGameOver(playerId, opponentId)
+
+    local enemyKing = opponentId == 0 and WhiteKing or BlackKing;
+    local enemyKingPos = game:GetUnitPos(enemyKing:GetGUID()).pos;
+    
+    -- Current State check
+    if IsPosOnCheckByPlayer(enemyKingPos, playerId) then
+        print("CHECK");
+
+        local map = game:GetMap(0);
+        local mapSize = map:GetSize();
+
+        -- Possible states check
+        local units = GetPlayerUnits(map, opponentId);
+        for pos, unit  in pairs(units) do
+            for x = 0, mapSize.x -1 do
+                for y = 0, mapSize.y - 1 do
+                    local dest = Vector2.new(x, y);
+                    if CanMove(map, pos, dest, opponentId) then
+                        local _, destUnit = ChessMove(map, pos, dest);
+                        enemyKingPos = game:GetUnitPos(enemyKing:GetGUID()).pos;
+                        local isOnCheck = IsPosOnCheckByPlayer(enemyKingPos, playerId);
+                        UndoChessMove(map, pos, dest, destUnit);
+
+                        if not isOnCheck then
+                            print("If unit at "..tostring(pos).." moves to "..tostring(dest).." check is avoided");
+                            
+                            return false
+                        end
+                    end
+                end
+            end
+
+        end
+    
+    else
+        return false;
+
+    end
+    
+    return true;
+end
+
+local function OnGameOver(event)
+    print("Is game over");
+    local trigger = event.process.trigger;
+    local playerId = trigger.id;
+    local opponentId = playerId == 0 and 1 or 0;
+
+    if IsGameOver(playerId, opponentId) then
+        game:RemovePlayer(opponentId);
+    end
+end
+
 CheckEH = {opType = 9, callback = OnChessCheck, notiType = EventNotification.Type.PRE};
+GameOverCheckEH = {opType = 9, callback = OnGameOver, notiType = EventNotification.Type.POST};
 

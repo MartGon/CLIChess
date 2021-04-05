@@ -67,3 +67,15 @@ map:AddUnit(Vector2.new(7, 7), rookType:CreateUnit(white));
 for i = 0, 7 do
     --map:AddUnit({x = i, y = 6}, whitePawnType:CreateUnit(white));
 end
+
+game:AddEventHandler(GameOverCheckEH);
+
+--[[
+local origin, dest = Vector2.new(7, 7), Vector2.new(7, 6)
+local _, nothing = ChessMove(map, origin, dest);
+UndoChessMove(map, origin, dest, nothing);
+
+local whiteQueenPos = Vector2.new(4, 0);
+local whiteQueen = map:GetUnit(Vector2.new(4, 6));
+assert(IsPosOnCheckByUnit(Vector2.new(4, 0), whiteQueen:GetGUID()), "IsPosOnCheckByUnit does not work correclty");
+]]--
