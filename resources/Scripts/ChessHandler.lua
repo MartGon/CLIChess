@@ -106,14 +106,16 @@ function OnChessCheck(event, guid)
         local map = game:GetMap(0);
         if map:IsPosValid(args.origin) and map:IsPosValid(args.dest) then
 
-            -- Apply movement, then check state
+            
             local unit = map:GetUnit(args.origin);
             if unit then
+                -- Apply movement, then check state
                 local destUnit = map:GetUnit(args.dest);
                 map:RemoveUnit(args.dest);
                 map:RemoveUnit(args.origin);
                 map:AddUnit(args.dest, unit);
-
+                
+                -- Check
                 if trigger.type == Trigger.Type.PLAYER then
                     local playerId = trigger.id;
                     local king = playerId == 0 and WhiteKing or BlackKing;

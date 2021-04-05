@@ -121,6 +121,50 @@ local blackMove = MovementDescType.New({
     maxGas = -1
 });
 
+local function GetLastPlayerOp()
+    local hCount = game:GetHistoryCount();
+
+    local op = nil;
+    for i = hCount, 1, -1 do
+        local process = game:GetHistoryProcess(i);
+        if process.trigger.type == Trigger.Type.PLAYER then
+            op = process.operation;
+            break;
+        end
+    end
+
+    return op;
+end
+
+local function IsPawn(unitGUID) 
+    return unitGUID.subType == WHITE_PAWN_TYPE or unitGUID.subType == BLACK_PAWN_TYPE;
+end
+
+local function IsDoubleMove(move)
+    return move == Dirs.n2 or move == Dirs.s2;
+end
+
+local function CheckEnPassant(dest)
+
+    local op = GetLastPlayerOp();
+    if op then
+        local args = op:GetArgs();
+        if args.type == "move" then
+            local otherUnit = args.unit;
+            if IsPawn(otherUnit:GetGUID()) then
+                local move = args.origin - args.dest;
+                if IsDoubleMove(move) then
+                    if args.dest.x == dest.x then -- Is on the same column
+                        return true, args.dest;
+                    end
+                end
+            end
+        end
+    end
+
+    return false, nil;
+end
+
 local function onDiagonalMove(event, guid) 
     
     local p = event.process;
@@ -138,8 +182,12 @@ local function onDiagonalMove(event, guid)
                 local isBlackDiagonal = move == Dirs.se or move == Dirs.sw;
                 local isWhiteDiagnoal = move == Dirs.ne or move == Dirs.nw;
                 if(isBlackDiagonal or isWhiteDiagnoal) then
-                    local destUnit = map:GetUnit(args.dest);
-                    if destUnit == nil then
+                    local isEnPassant, capturedPawnPos = CheckEnPassant(args.dest);
+                    if isEnPassant then
+                        args.destUnit = map:GetUnit(capturedPawnPos);
+                        map:RemoveUnit(capturedPawnPos);
+                        print("Capturing pawn at "..tostring(capturedPawnPos).." by En Passant");
+                    elseif map:IsPosFree(args.dest) then
                         print("Pawns can only move diagonally if capturing");
                         game:CancelProcess(p);
                     end
@@ -147,10 +195,6 @@ local function onDiagonalMove(event, guid)
             end
         end
     end
-end
-
-local function IsDoubleMove(move)
-    return move == Dirs.n2 or move == Dirs.s2;
 end
 
 local function onMove(event, guid)
