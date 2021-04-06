@@ -80,7 +80,7 @@ void PrintMapCommand::Execute(std::vector<std::string> args)
     for(int i = 0; i < mapSize.y; i++)
     {   
         PrintPadding(padding_.left, ' ');
-        std::cout << i;
+        std::cout << mapSize.y - i;
 
         for(int j = 0; j < mapSize.x; j++)
         {

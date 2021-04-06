@@ -111,7 +111,6 @@ function IsPosOnCheckByUnit(targetPos, attackerGUID)
 
         local canMove, res = CanMove(map, attackerPos, targetPos, attackerOwner:GetId());
         if canMove then
-            print("Unit at "..tostring(attackerPos).." is checking unit at pos "..tostring(targetPos));
             return true;
         end
     end
@@ -124,11 +123,10 @@ function IsPosOnCheckByPlayer(targetPos, attackerPlayerId)
     local map = game:GetMap(0);
     local units = GetPlayerUnits(map, attackerPlayerId);
     for pos, unit  in pairs(units) do
-
         local ownerId = unit:GetOwner():GetId();
         if ownerId == attackerPlayerId then
             if IsPosOnCheckByUnit(targetPos, unit:GetGUID()) then
-                return true;
+                return true, pos;
             end
         end
 
@@ -157,7 +155,9 @@ function OnChessCheck(event, guid)
                     local kingPos = game:GetUnitPos(king:GetGUID()).pos;
                     
                     -- Check
-                    if IsPosOnCheckByPlayer(kingPos, playerId) then
+                    local isOnCheck, attackerPos = IsPosOnCheckByPlayer(kingPos, playerId)
+                    if isOnCheck then
+                        print("Unit at "..tostring(attackerPos).." is checking unit at pos "..tostring(kingPos));
                         print("Cannot perform a move that would leave your king on check!");
                         game:CancelProcess(event.process);
                     end
@@ -231,7 +231,6 @@ function IsGameOver(playerId, opponentId)
 end
 
 local function OnGameOver(event)
-    print("Is game over");
     local trigger = event.process.trigger;
     local playerId = trigger.id;
     local opponentId = playerId == 0 and 1 or 0;

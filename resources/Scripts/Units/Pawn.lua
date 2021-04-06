@@ -241,7 +241,6 @@ local function onMove(event, guid)
 end
 
 local function afterMove(event, guid)
-    print("Pawn after move");
 
     local p = event.process;
     local op = p.operation;

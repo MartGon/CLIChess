@@ -94,18 +94,21 @@ int main(int argc, const char** args)
     {
         std::cout << "Moving\n";
 
+        auto& game = sGame.GetGame();
+        auto mapSize = game.GetMap(0).GetSize();
+
         int originX = GetCoord(args[0][0]);
-        int originY = GetCoord(args[0][1]);
+        int originY = mapSize.y - GetCoord(args[0][1]);
         Vector2 origin{originX, originY};
         std::cout << "origin: " << origin.ToString() << '\n';
 
         int destX = GetCoord(args[1][0]);
-        int destY = GetCoord(args[1][1]);
+        int destY = mapSize.y - GetCoord(args[1][1]);
         Vector2 dest{destX, destY};
         std::cout << "dest: " << dest.ToString() << '\n';
 
         auto s = sGame.CreateScript(moveST);
-        std::cout << "script: " << s << '\n';
+        //std::cout << "script: " << s << '\n';
         auto& st = sGame.GetScriptTable(s);
 
         st.Set("type", "move");
@@ -113,7 +116,7 @@ int main(int argc, const char** args)
         st.SetDataCopy<Script::UserData::Vector2>("origin", origin);
         st.SetDataCopy<Script::UserData::Vector2>("dest", dest);
 
-        auto& game = sGame.GetGame();
+        
         Process::Trigger::Trigger t{Process::Trigger::Type::PLAYER, game.GetCurrentTurn().playerIndex};
         sGame.PushScript(s, t);
         
