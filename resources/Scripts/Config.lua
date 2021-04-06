@@ -38,34 +38,30 @@ local tileType = DB:AddTileType("ChessTile");
 local map = game:CreateMap(8, 8);
 map:Fill(tileType);
 
---map:AddUnit({x = 0, y = 0}, rookType:CreateUnit(black));
---map:AddUnit({x = 1, y = 0}, knightType:CreateUnit(black));
---map:AddUnit({x = 2, y = 0}, bishopType:CreateUnit(black));
+map:AddUnit({x = 0, y = 0}, rookType:CreateUnit(black));
+map:AddUnit({x = 1, y = 0}, knightType:CreateUnit(black));
+map:AddUnit({x = 2, y = 0}, bishopType:CreateUnit(black));
 map:AddUnit(Vector2.new(3, 0), queenType:CreateUnit(black));
 map:AddUnit(Vector2.new(4, 0), BlackKing);
---map:AddUnit({x = 5, y = 0}, bishopType:CreateUnit(black));
---map:AddUnit({x = 6, y = 0}, knightType:CreateUnit(black));
---map:AddUnit(Vector2.new(7, 0), rookType:CreateUnit(black));
+map:AddUnit({x = 5, y = 0}, bishopType:CreateUnit(black));
+map:AddUnit({x = 6, y = 0}, knightType:CreateUnit(black));
+map:AddUnit(Vector2.new(7, 0), rookType:CreateUnit(black));
 
 for i = 0, 7 do
-    --map:AddUnit({x = i, y = 1}, blackPawnType:CreateUnit(black));
+    map:AddUnit({x = i, y = 1}, blackPawnType:CreateUnit(black));
 end
 
-map:AddUnit({x = 2, y = 3}, blackPawnType:CreateUnit(black));
-map:AddUnit({x = 1, y = 5}, whitePawnType:CreateUnit(white));
-map:AddUnit({x = 1, y = 1}, whitePawnType:CreateUnit(white));
-
 map:AddUnit(Vector2.new(0, 7), rookType:CreateUnit(white));
---map:AddUnit({x = 1, y = 7}, knightType:CreateUnit(white));
---map:AddUnit({x = 2, y = 7}, bishopType:CreateUnit(white));
+map:AddUnit({x = 1, y = 7}, knightType:CreateUnit(white));
+map:AddUnit({x = 2, y = 7}, bishopType:CreateUnit(white));
 map:AddUnit(Vector2.new(3, 7), queenType:CreateUnit(white));
 map:AddUnit(Vector2.new(4, 7), WhiteKing);
---map:AddUnit({x = 5, y = 7}, bishopType:CreateUnit(white));
---map:AddUnit({x = 6, y = 7}, knightType:CreateUnit(white));
+map:AddUnit({x = 5, y = 7}, bishopType:CreateUnit(white));
+map:AddUnit({x = 6, y = 7}, knightType:CreateUnit(white));
 map:AddUnit(Vector2.new(7, 7), rookType:CreateUnit(white));
 
 for i = 0, 7 do
-    --map:AddUnit({x = i, y = 6}, whitePawnType:CreateUnit(white));
+    map:AddUnit({x = i, y = 6}, whitePawnType:CreateUnit(white));
 end
 
 game:AddEventHandler(GameOverCheckEH);
