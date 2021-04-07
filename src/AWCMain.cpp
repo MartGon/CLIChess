@@ -144,11 +144,11 @@ int main(int argc, const char** args)
     // Add command to console
     console.AddCommand("print", printMapComm);
     console.AddCommand("print-map", printMapComm);
-    console.AddCommand("pass", passComm);
+    //console.AddCommand("pass", passComm);
     console.AddCommand("exit", exitComm);
     console.AddCommand("move", moveComm);
     console.AddCommand("castle", castleComm);
-    console.AddCommand("report", reportComm);
+    //console.AddCommand("report", reportComm);
     console.AddCommand("help", helpComm);
 
     while(console.IsOpen())
@@ -159,7 +159,7 @@ int main(int argc, const char** args)
         {
             std::cout << "Game is over!!!\n";
             std::cout << "Team " << game.GetWinnerTeamId() << " wins\n";
-            break;
+            console.Close();
         }
     }
 

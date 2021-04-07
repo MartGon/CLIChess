@@ -5,7 +5,7 @@ end
 
 function CanMove(map, origin, dest, playerId)
 
-    local unit = map:GetUnit(origin); -- origin is defined in this env
+    local unit = map:GetUnit(origin);
 
     if unit then
         local owner = unit:GetOwner();
@@ -20,7 +20,7 @@ function CanMove(map, origin, dest, playerId)
                         local attack = unit:CalculateAttack(0, map, origin);
                         canAttack = attack:CanAttack(dest);
                         if canAttack then
-                            map:RemoveUnit(dest) -- Remove to calculate movement
+                            map:RemoveUnit(dest)
                         end
                     else
                         return false, "Cannot capture a friendly unit";
@@ -29,7 +29,7 @@ function CanMove(map, origin, dest, playerId)
                 
                 local movement = unit:CalculateMovement(map, origin);
                 if canAttack and destUnit then
-                    map:AddUnit(dest, destUnit); -- restore unit if cannot move there
+                    map:AddUnit(dest, destUnit);
                 end
 
                 if movement:CanMove(dest) then
@@ -83,7 +83,6 @@ function HasAlreadyMoved(guid)
             local args = p.operation:GetArgs();
             if args.type == "move" then
                 local unitGUID = args.unit:GetGUID()
-                -- print("On process "..i.." unit with guid "..tostring(unitGUID).." moved");
                 if unitGUID == guid then
                     hasMoved = true;
                     break;
@@ -100,12 +99,10 @@ function HasAlreadyMoved(guid)
     return hasMoved;
 end
 
-function IsPosOnCheckByUnit(targetPos, attackerGUID)
+function IsPosOnCheckByUnit(targetPos, attackerPos)
     local map = game:GetMap(0);
 
-    local attackerPos = game:GetUnitPos(attackerGUID);
     if attackerPos then
-        attackerPos = attackerPos.pos;
         local attacker = map:GetUnit(attackerPos);
         local attackerOwner = attacker:GetOwner();
 
@@ -125,7 +122,7 @@ function IsPosOnCheckByPlayer(targetPos, attackerPlayerId)
     for pos, unit  in pairs(units) do
         local ownerId = unit:GetOwner():GetId();
         if ownerId == attackerPlayerId then
-            if IsPosOnCheckByUnit(targetPos, unit:GetGUID()) then
+            if IsPosOnCheckByUnit(targetPos, pos) then
                 return true, pos;
             end
         end

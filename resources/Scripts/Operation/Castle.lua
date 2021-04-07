@@ -46,7 +46,7 @@ function Execute(game, process)
                 rookCastlePos = Vector2.new(origin.x + inc, origin.y);
                 for x = rookCastlePos.x, dest.x, inc do -- Rule 3, 5 and 6
                     local pos = Vector2.new(x, origin.y);
-                    -- print("Checking if pos "..tostring(pos).." is threatened");
+                    
                     if map:IsPosFree(pos) then -- Rule 3
                         if IsPosOnCheckByPlayer(pos, enemyId, playerId) then -- Rule 5 and 6
                             error("Pos "..tostring(pos).." is on check");

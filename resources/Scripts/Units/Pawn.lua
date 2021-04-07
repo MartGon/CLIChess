@@ -154,7 +154,7 @@ local function CheckEnPassant(dest)
             if IsPawn(otherUnit:GetGUID()) then
                 local move = args.origin - args.dest;
                 if IsDoubleMove(move) then
-                    if args.dest.x == dest.x then -- Is on the same column
+                    if args.dest.x == dest.x and args.dest.y ~= dest.y then -- Is on the same column
                         return true, args.dest;
                     end
                 end
