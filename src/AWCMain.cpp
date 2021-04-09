@@ -89,8 +89,10 @@ int main(int argc, const char** args)
     };
     subject.Register(Script::SCRIPT, cb, Event::Notification::Type::POST);
 
+    unsigned int prevHistoryIndex = 0;
+
     // Move Command
-    auto parseMove = [&moveST, &sGame](std::vector<std::string> args)
+    auto parseMove = [&moveST, &sGame, &prevHistoryIndex](std::vector<std::string> args)
     {
         std::cout << "Moving\n";
 
@@ -121,10 +123,13 @@ int main(int argc, const char** args)
         sGame.PushScript(s, t);
         
         sGame.GetGame().Run();
+
+        prevHistoryIndex = sGame.GetGame().GetHistoryIndex();
     };
     std::shared_ptr<CommandNS::Custom> moveComm{new CommandNS::Custom{game, parseMove}};
 
-    auto parseCastle = [&castleST, &sGame](std::vector<std::string> args)
+    // Castle
+    auto parseCastle = [&castleST, &sGame, &prevHistoryIndex](std::vector<std::string> args)
     {
         std::string side = args.size() > 0 ? args[0] : "null";
 
@@ -138,8 +143,17 @@ int main(int argc, const char** args)
         sGame.PushScript(s, t);
 
         sGame.GetGame().Run();
+
+        prevHistoryIndex = sGame.GetGame().GetHistoryIndex();
     };
     std::shared_ptr<CommandNS::Custom> castleComm{new CommandNS::Custom{game, parseCastle}};
+
+    // Parse Undo
+    auto parseUndo = [&game, &prevHistoryIndex](std::vector<std::string> args)
+    {
+        game.Undo();
+    };
+    std::shared_ptr<CommandNS::Custom> undoComm{new CommandNS::Custom{game, parseUndo}};
 
     // Add command to console
     console.AddCommand("print", printMapComm);
@@ -148,7 +162,7 @@ int main(int argc, const char** args)
     console.AddCommand("exit", exitComm);
     console.AddCommand("move", moveComm);
     console.AddCommand("castle", castleComm);
-    //console.AddCommand("report", reportComm);
+    console.AddCommand("undo", undoComm);
     console.AddCommand("help", helpComm);
 
     while(console.IsOpen())

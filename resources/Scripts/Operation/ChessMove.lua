@@ -17,6 +17,7 @@ end
 
 function Undo(game)
 
+    print("Undoing");
     local map = game:GetMap(mapIndex);
 
     UndoChessMove(map, origin, dest, destUnit);
