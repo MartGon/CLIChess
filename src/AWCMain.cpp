@@ -152,6 +152,10 @@ int main(int argc, const char** args)
     auto parseUndo = [&game, &prevHistoryIndex](std::vector<std::string> args)
     {
         game.Undo();
+        game.PassTurn();
+
+        auto nextTurn = game.GetCurrentTurn();
+        std::cout << "Now it's Player " << nextTurn.playerIndex << " turn\n";
     };
     std::shared_ptr<CommandNS::Custom> undoComm{new CommandNS::Custom{game, parseUndo}};
 

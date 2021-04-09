@@ -122,7 +122,7 @@ local blackMove = MovementDescType.New({
 });
 
 local function GetLastPlayerOp()
-    local hCount = game:GetHistoryCount();
+    local hCount = game:GetHistoryIndex();
 
     local op = nil;
     for i = hCount, 1, -1 do

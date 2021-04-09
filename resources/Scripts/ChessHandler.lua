@@ -77,7 +77,7 @@ end
 function HasAlreadyMoved(guid)
 
     local hasMoved = false;
-    for i = 1, game:GetHistoryCount() do
+    for i = 1, game:GetHistoryIndex() do
         local p = game:GetHistoryProcess(i);
         if p.trigger.type == Trigger.Type.PLAYER then
             local args = p.operation:GetArgs();
